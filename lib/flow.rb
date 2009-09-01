@@ -8,5 +8,17 @@ class Flow < Flareshow::Base
       "http://#{Flareshow::Base.server.host}/#{Flareshow::Base.server.domain}/shareflow/c/#{id}"
     end
   end
+  
+  def invite
+    
+  end
+  
+  def uninvite
+    
+  end
+  
+  def remove_member
+    
+  end
 
 end

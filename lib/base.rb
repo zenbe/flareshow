@@ -1,5 +1,12 @@
 module Flareshow
   
+  # default parameters that are included with query
+  # requests unless they are explicitly overridden
+  DEFAULT_PARAMS = {:order => "created_at desc"}
+  
+  # mappings to allow easy conversion from the
+  # response keys the server sends back in JSUP
+  # messages
   ResourceToClassMap = {
     "flows"       => "Flow",
     "posts"       => "Post",
@@ -10,7 +17,9 @@ module Flareshow
   }
   ClassToResourceMap = ResourceToClassMap.invert
   
-  
+  # Flareshow objects are subclasses of OpenStruct
+  # allowing for a flexible definition of properties
+  # as JSON returned from server requests
   class Base < OpenStruct
     # =================
     # = Class Methods =
@@ -61,14 +70,14 @@ module Flareshow
       def query(params={}, callbacks={})
         raise UserRequiredException unless User.current
         response = post(api_endpoint, {"key" => User.current.auth_token, "query" => params})
-        assimilate_resources(response)
+        assimilate_resources(response) if response[:status_code] == 200
         dispatch(response, callbacks)
       end
       
       # commit changes to the server
       def commit(params={}, callbacks={})
         response = post(api_endpoint, params)
-        assimilate_resources(response)
+        assimilate_resources(response) if response[:status_code] == 200
         dispatch(response, callbacks)
       end
       
@@ -88,7 +97,8 @@ module Flareshow
           klass = Kernel.const_get(Flareshow::ResourceToClassMap[resource_key])
           next unless klass
           resources.each do |resource_data|
-            klass.get(resource_data)
+            item = klass.get(resource_data["id"])
+            item.update(resource_data, :server)
           end
         end        
       end
@@ -124,8 +134,18 @@ module Flareshow
       # find a resource by querying the server
       def find(params)
         key = Flareshow::ClassToResourceMap[self.name]
+        params = DEFAULT_PARAMS.merge(params)
         self.query({key => params})
       end
+
+      # return the first resource in the client store
+      # or go to the server and fetch one item
+      def first
+        return store.first if store.size > 0
+        find({:limit => 1})
+        return store.first
+      end
+      
 
       # create a resource local and sync it to the server
       def create(params)
@@ -151,9 +171,37 @@ module Flareshow
       primary_key
     end
     
+    # update the instance data for this resource
+    # keeping track of dirty state if the update came from
+    # the client
+    def update(attributes, source = :client)
+      attributes.each do |p|
+        key, value = p[0], p[1]
+        self.set(key, value, source)
+      end
+    end
+    
+    # keep track of dirty state on the client by maintaining a copy
+    # of the original state of each intstance variable when it is provided by
+    # the server
+    def set(key, value, source = :client)
+      # Util.log_info("setting #{key} : #{value}")
+      return if key == "id"
+      if source == :client
+        self.send("#{key}=",value)
+      else
+        self.send("original_#{key}=", self.send("#{key}"))
+        self.send("#{key}=",value)
+      end
+    end
+    
+    def get(key)
+      
+    end
+    
     # reload the resource from the server
     def refresh
-
+      
     end
     
     # save a resource to the server
