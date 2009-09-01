@@ -13,7 +13,8 @@ module Flareshow
     "comments"    => "Comment",
     "files"       => "FileAttachment",
     "memberships" => "Membership",
-    "invitations" => "Invitations"
+    "invitations" => "Invitations",
+    "users"       => "User"
   }
   ClassToResourceMap = ResourceToClassMap.invert
   
@@ -115,8 +116,8 @@ module Flareshow
       
       # find an existing instance of this object in the client or create a new one
       def get(id_or_object)
-        o = if id_or_object.is_a? String
-          id = id_or_object
+        o = if id_or_object.is_a?(String) || id_or_object.is_a?(Integer)
+          id = id_or_object.to_s
           store[id] ||= new({"id" => id})
         elsif
           id = id_or_object["id"]
