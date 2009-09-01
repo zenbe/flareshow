@@ -45,19 +45,19 @@ class User < Flareshow::Base
   # = Associations =
   # ================
   def flows
-    Flow.find({"user_id" => id})
+    Flow.find({"user_id" => ["in", id]})
   end
   
   def posts
-    
+    Post.find({"user_id" => ["in", id]})
   end
   
   def comments
-    
+    Comment.find({"user_id" => ["in", id]})
   end
   
   def files
-    
+    File.find({"user_id" => ["in", id]})
   end
   
   # ==================
