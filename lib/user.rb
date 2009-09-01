@@ -1,9 +1,14 @@
 class User < Flareshow::Base
-  
+
   # =================
   # = Class Methods =
   # =================
   class << self
+    
+    # return the current authenticated user
+    def current
+      @current
+    end
     
     # authenticate user credentials
     def log_in(login, password)
@@ -22,7 +27,7 @@ class User < Flareshow::Base
     # =============
     # login success callback
     def on_authentication_success(response_body)
-      User.new(response_body["data"])
+      @current = User.get(response_body["data"])
     end
 
     # login failed callback
@@ -40,7 +45,7 @@ class User < Flareshow::Base
   # = Associations =
   # ================
   def flows
-    query()
+    Flow.find({"user_id" => id})
   end
   
   def posts

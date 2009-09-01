@@ -1,0 +1,8 @@
+TODO:
+remove temporary auth setup logging in user automatically
+handle failure states on requests
+
+TODONE:
+
+QUESTIONS:
+should authentication responses look like query and commit responses namespacing is applied differently in authentication currently?
