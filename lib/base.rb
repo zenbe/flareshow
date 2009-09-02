@@ -53,16 +53,20 @@ module Flareshow
         request = Curl::Easy.new(url) do |curl|
           curl.headers = {
             'Accept'        => 'application/json',
-            'Content-Type'  => 'application/json',
-            'User-Agent'    => 'Ruby Flareshow 0.1'
+            'User-Agent'    => 'flareshow 0.1'
           }
+          curl.multipart_form_post=true
         end
-        request.http_post(params.to_json)
+        request.http_post(*params)
         process_response(request)
       end
       
       # authenticate with the server
       def authenticate(params={}, callbacks={})
+        params = [
+          Curl::PostField.content("login", params[:login]),
+          Curl::PostField.content("password", params[:password])
+        ]
         response = post(auth_endpoint, params)
         handle_response(response, callbacks)
       end
@@ -70,14 +74,36 @@ module Flareshow
       # query the server
       def query(params={}, callbacks={})
         raise UserRequiredException unless User.current
-        response = post(api_endpoint, {"key" => User.current.get("auth_token"), "query" => params})
+
+        # add the json request parts
+        params = [
+          Curl::PostField.content("key", User.current.get("auth_token"), 'application/json'),
+          Curl::PostField.content("query", params.to_json, 'application/json')
+        ]
+        
+        response = post(api_endpoint, params)
         results = assimilate_resources(response) if response[:status_code] == 200
         handle_response(response,callbacks,results)
       end
       
       # commit changes to the server
-      def commit(params={}, callbacks={})
-        response = post(api_endpoint, {"key" => User.current.get("auth_token"), "data" => params})
+      def commit(params={}, callbacks={}, files=[])
+        curl_params = []
+        # add any file parts passed in and assign a part id to the 
+        params["files"] = (params["files"] || []).map do |f|
+          next unless f["file_path"]
+          curl_params.push(Curl::PostField.file(f["id"], f["file_path"]))
+          f["part_id"] = f["id"]
+          f
+        end.compact
+        
+        # add the json request parts
+        curl_params += [
+          Curl::PostField.content("key", User.current.get("auth_token"), 'application/json'),
+          Curl::PostField.content("data", params.to_json, 'application/json')
+        ]
+        
+        response = post(api_endpoint, curl_params)
         results = assimilate_resources(response) if response[:status_code] == 200
         handle_response(response,callbacks,results)
       end
