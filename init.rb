@@ -18,5 +18,5 @@ Dir.glob(File.join(ROOT, "**", "*.rb")).each{|lib| require lib}
 
 #TODO Temp
 # initial setup
-Flareshow::Base.server = Server.new("zenbestaging.com", "inc.zenbestaging.com")
-User.log_in('will', 'r1chmond')
+Flareshow::Base.server = Server.new("zenbedevelopment.com", "webco.zenbedevelopment.com")
+User.log_in('zenbe', 'menudo')

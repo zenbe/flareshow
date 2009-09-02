@@ -13,7 +13,7 @@ module Flareshow
     "comments"    => "Comment",
     "files"       => "FileAttachment",
     "memberships" => "Membership",
-    "invitations" => "Invitations",
+    "invitations" => "Invitation",
     "users"       => "User"
   } unless defined? ResourceToClassMap
   ClassToResourceMap = ResourceToClassMap.invert unless defined? ClassToResourceMap
@@ -64,24 +64,32 @@ module Flareshow
       # authenticate with the server
       def authenticate(params={}, callbacks={})
         response = post(auth_endpoint, params)
-        dispatch(response, callbacks)
+        handle_response(response, callbacks)
       end
       
       # query the server
       def query(params={}, callbacks={})
         raise UserRequiredException unless User.current
         response = post(api_endpoint, {"key" => User.current.get("auth_token"), "query" => params})
-        assimilate_resources(response) if response[:status_code] == 200
-        dispatch(response, callbacks)
-        response
+        results = assimilate_resources(response) if response[:status_code] == 200
+        handle_response(response,callbacks,results)
       end
       
       # commit changes to the server
       def commit(params={}, callbacks={})
         response = post(api_endpoint, {"key" => User.current.get("auth_token"), "data" => params})
-        assimilate_resources(response) if response[:status_code] == 200
-        dispatch(response, callbacks)
-        response
+        results = assimilate_resources(response) if response[:status_code] == 200
+        handle_response(response,callbacks,results)
+      end
+      
+      # return the results directly or invoke callbacks if provided
+      def handle_response(response, callbacks={}, results=nil)
+        if callbacks.empty?
+          results
+        else
+          dispatch(response, callbacks)
+          true
+        end
       end
       
       # get the interesting bits out of the curl response
@@ -93,6 +101,7 @@ module Flareshow
       
       # assimilate the resources provided in the response
       def assimilate_resources(response)
+        results = {}
         # process each resource key and generate a new object
         # or merge the object data with an existing object
         response[:body].each do |resource_pair|
@@ -102,8 +111,11 @@ module Flareshow
           resources.each do |resource_data|
             item = klass.get(resource_data["id"], :server)
             item.update(resource_data, :server)
+            results[resource_key] ||= []
+            results[resource_key].push(item)
           end
-        end        
+        end
+        results
       end
       
       # dispatch a request to the appropriate callback
@@ -134,11 +146,18 @@ module Flareshow
         end
       end
       
+      # get all the resources of this type from the server
+      def all
+        key = Flareshow::ClassToResourceMap[self.name]
+        params = DEFAULT_PARAMS
+        self.query({key => params})
+      end
+      
       # find a resource by querying the server
       def find(params)
         key = Flareshow::ClassToResourceMap[self.name]
         params = DEFAULT_PARAMS.merge(params)
-        self.query({key => params})
+        (self.query({key => params}) || {})[key]
       end
 
       # return the first resource in the client store
@@ -164,11 +183,60 @@ module Flareshow
     # ====================
     # = Instance Methods =
     # ====================
+    
+    # constructor
+    # build a new Flareshow::Base resource
     def initialize(data={}, source = :client)
       @data = {}
       data["id"] = UUID.generate.upcase if source == :client
       update(data, source)
     end
+
+    # ==============================
+    # = Server Persistence Actions =
+    # ==============================
+    
+    # reload the resource from the server
+    def refresh(callbacks={})
+      key = Flareshow::ClassToResourceMap[self.class.name]
+      results = self.class.query({key => {"id" => id}}, callbacks)
+      mark_destroyed! if results.empty?
+      self
+    end
+    
+    # save a resource to the server
+    def save(callbacks={})
+      key = Flareshow::ClassToResourceMap[self.class.name]
+      self.class.commit({key => [(self.changes || {}).merge({"id" => id})] }, callbacks)
+      self
+    end
+    
+    # destroy the resource on the server
+    def destroy(callbacks={})
+      key = Flareshow::ClassToResourceMap[self.class.name]
+      self.class.commit({key => [{"id" => id, "_removed" => true}]}, callbacks)
+      mark_destroyed!
+      self
+    end
+    
+    # has this resource been destroyed
+    def destroyed?
+      self._removed || self.frozen?
+    end
+    
+    private
+    
+    def mark_destroyed!
+      self.freeze
+      self._removed=true 
+      self.class.store.delete(id)
+    end
+    
+    public
+    
+    # ==================================
+    # = Attribute and State Management =
+    # ==================================
     
     # return the server id of a resource
     def id
@@ -213,19 +281,12 @@ module Flareshow
     # fallback to getter or setter
     def method_missing(meth, *args)
       meth = meth.to_s
-      meth.match(/\=/) ? set(meth, args.first) : get(meth)
+      meth.match(/\=/) ? set(meth.gsub(/\=/,''), *args) : get(meth)
     end
     
-    # reload the resource from the server
-    def refresh(callbacks={})
-      key = Flareshow::ClassToResourceMap[self.class.name]
-      self.class.query({key => {"id" => id}}, callbacks)
-    end
-    
-    # save a resource to the server
-    def save(callbacks={})
-      key = Flareshow::ClassToResourceMap[self.class.name]
-      self.class.commit({key => (self.changes || {}).merge({"id" => id}) }, callbacks)
+    # has this model been removed on the server
+    def method_name
+      !!self._removed
     end
     
   end
