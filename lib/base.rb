@@ -2,7 +2,7 @@ module Flareshow
   
   # default parameters that are included with query
   # requests unless they are explicitly overridden
-  DEFAULT_PARAMS = {:order => "created_at desc"}
+  DEFAULT_PARAMS = {:order => "created_at desc"} unless defined? DEFAULT_PARAMS
   
   # mappings to allow easy conversion from the
   # response keys the server sends back in JSUP
@@ -15,13 +15,13 @@ module Flareshow
     "memberships" => "Membership",
     "invitations" => "Invitations",
     "users"       => "User"
-  }
-  ClassToResourceMap = ResourceToClassMap.invert
+  } unless defined? ResourceToClassMap
+  ClassToResourceMap = ResourceToClassMap.invert unless defined? ClassToResourceMap
   
   # Flareshow objects are subclasses of OpenStruct
   # allowing for a flexible definition of properties
   # as JSON returned from server requests
-  class Base < OpenStruct
+  class Base
     # =================
     # = Class Methods =
     # =================
@@ -70,16 +70,18 @@ module Flareshow
       # query the server
       def query(params={}, callbacks={})
         raise UserRequiredException unless User.current
-        response = post(api_endpoint, {"key" => User.current.auth_token, "query" => params})
+        response = post(api_endpoint, {"key" => User.current.get("auth_token"), "query" => params})
         assimilate_resources(response) if response[:status_code] == 200
         dispatch(response, callbacks)
+        response
       end
       
       # commit changes to the server
       def commit(params={}, callbacks={})
-        response = post(api_endpoint, params)
+        response = post(api_endpoint, {"key" => User.current.get("auth_token"), "data" => params})
         assimilate_resources(response) if response[:status_code] == 200
         dispatch(response, callbacks)
+        response
       end
       
       # get the interesting bits out of the curl response
@@ -98,7 +100,7 @@ module Flareshow
           klass = Kernel.const_get(Flareshow::ResourceToClassMap[resource_key])
           next unless klass
           resources.each do |resource_data|
-            item = klass.get(resource_data["id"])
+            item = klass.get(resource_data["id"], :server)
             item.update(resource_data, :server)
           end
         end        
@@ -115,13 +117,13 @@ module Flareshow
       end
       
       # find an existing instance of this object in the client or create a new one
-      def get(id_or_object)
+      def get(id_or_object, source = :client)
         o = if id_or_object.is_a?(String) || id_or_object.is_a?(Integer)
           id = id_or_object.to_s
-          store[id] ||= new({"id" => id})
+          store[id] ||= new({"id" => id}, source)
         elsif
           id = id_or_object["id"]
-          store[id] ||= new(id_or_object)
+          store[id] ||= new(id_or_object, source)
         end
       end
       
@@ -162,14 +164,15 @@ module Flareshow
     # ====================
     # = Instance Methods =
     # ====================
-    def initialize(data={})
-      data["primary_key"] = data["id"]
-      super(data)
+    def initialize(data={}, source = :client)
+      @data = {}
+      data["id"] = UUID.generate.upcase if source == :client
+      update(data, source)
     end
     
     # return the server id of a resource
     def id
-      primary_key
+      @data["id"]
     end
     
     # update the instance data for this resource
@@ -187,27 +190,42 @@ module Flareshow
     # the server
     def set(key, value, source = :client)
       # Util.log_info("setting #{key} : #{value}")
-      return if key == "id"
-      if source == :client
-        self.send("#{key}=",value)
-      else
-        self.send("original_#{key}=", self.send("#{key}"))
-        self.send("#{key}=",value)
+      @data["original_#{key}"] = value if source == :server
+      @data[key]=value
+    end
+    
+    # get a data value
+    def get(key)
+      @data[key]
+    end
+    
+    # all the state that has been modified on the client
+    def changes
+      attributes = @data.inject({}) do |memo, pair|
+        key, value = *pair
+        if @data[key] != @data["original_#{key}"] && !key.match(/original/)
+          memo[key] = value
+        end
+        memo
       end
     end
     
-    def get(key)
-      
+    # fallback to getter or setter
+    def method_missing(meth, *args)
+      meth = meth.to_s
+      meth.match(/\=/) ? set(meth, args.first) : get(meth)
     end
     
     # reload the resource from the server
-    def refresh
-      
+    def refresh(callbacks={})
+      key = Flareshow::ClassToResourceMap[self.class.name]
+      self.class.query({key => {"id" => id}}, callbacks)
     end
     
     # save a resource to the server
-    def save
-
+    def save(callbacks={})
+      key = Flareshow::ClassToResourceMap[self.class.name]
+      self.class.commit({key => (self.changes || {}).merge({"id" => id}) }, callbacks)
     end
     
   end

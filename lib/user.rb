@@ -27,7 +27,7 @@ class User < Flareshow::Base
     # =============
     # login success callback
     def on_authentication_success(response_body)
-      @current = User.get(response_body["data"])
+      @current = User.get(response_body["data"], :server)
     end
 
     # login failed callback

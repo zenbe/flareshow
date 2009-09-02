@@ -9,16 +9,4 @@ class Flow < Flareshow::Base
     end
   end
   
-  def invite
-    
-  end
-  
-  def uninvite
-    
-  end
-  
-  def remove_member
-    
-  end
-
 end
