@@ -22,10 +22,16 @@ class Post < Flareshow::Base
     c.save
   end
   
+  def build_file(file_path)
+    self.files ||= []
+    self.files += [{"part_id" => "file_#{UUID.generate}", "file_path" => file_path}]
+  end
+  
   # upload a file to a post
-  def add_file(file_path)
-    f = FileAttachment.new
-    f.file_path=file_path
-    f.save
+  def create_file(file_path)
+    self.files = []
+    self.build_file(file_path)
+    self.save
+    self.files = nil
   end
 end

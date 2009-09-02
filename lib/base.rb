@@ -61,6 +61,17 @@ module Flareshow
         process_response(request)
       end
       
+      # do a get request
+      def http_get(url)
+        request = Curl::Easy.new(url + "?key=#{User.current.get("auth_token")}") do |curl|
+          curl.headers = {
+            'User-Agent'    => 'flareshow 0.1'
+          }
+        end
+        request.perform()
+        request.body_str
+      end
+      
       # authenticate with the server
       def authenticate(params={}, callbacks={})
         params = [
@@ -89,13 +100,21 @@ module Flareshow
       # commit changes to the server
       def commit(params={}, callbacks={}, files=[])
         curl_params = []
-        # add any file parts passed in and assign a part id to the 
-        params["files"] = (params["files"] || []).map do |f|
-          next unless f["file_path"]
-          curl_params.push(Curl::PostField.file(f["id"], f["file_path"]))
-          f["part_id"] = f["id"]
-          f
-        end.compact
+        has_files = false
+        if params["posts"]
+          # add any file parts passed in and assign a part id to the 
+          params["posts"] = (params["posts"]).map do |f|
+            if f["files"]
+              f["files"] = (f["files"]).each do |ff|
+                has_files = true
+                curl_params.push(Curl::PostField.file(ff["part_id"], ff["file_path"]))
+              end
+            end
+            f
+          end
+        end
+        
+        params["files"] = []
         
         # add the json request parts
         curl_params += [
@@ -285,7 +304,7 @@ module Flareshow
     def set(key, value, source = :client)
       # Util.log_info("setting #{key} : #{value}")
       @data["original_#{key}"] = value if source == :server
-      @data[key]=value
+      @data[key.to_s]=value
     end
     
     # get a data value
@@ -297,7 +316,7 @@ module Flareshow
     def changes
       attributes = @data.inject({}) do |memo, pair|
         key, value = *pair
-        if @data[key] != @data["original_#{key}"] && !key.match(/original/)
+        if @data[key] != @data["original_#{key}"] && !key.to_s.match(/original/)
           memo[key] = value
         end
         memo

@@ -1,5 +1,15 @@
 class Flow < Flareshow::Base
-
+  
+  # =================
+  # = Class Methods =
+  # =================
+  class << self
+    # find a flow by name
+    def find_by_name(name)
+      self.find({:name => name})
+    end
+  end
+  
   # permalink for this flow
   def permalink(mobile=false)
     if mobile
@@ -30,16 +40,16 @@ class Flow < Flareshow::Base
   end
   
   # build a new post but don't persist it immediatel
-  def build_post
+  def build_post(attributes)
     post = Post.new
+    post.update(attributes)
     post.flow_id = id
     post
   end
   
   # create a new post in this flow
   def create_post(attributes)
-    p=build(post)
-    p.update(attributes)
+    p=build_post(attributes)
     p.save
   end
   

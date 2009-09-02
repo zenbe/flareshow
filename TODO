@@ -1,4 +1,7 @@
 TODO:
+flesh out more resource methods
+make post requests with embedded file attachments respond with the file attachments for now...later we need to allow the creation of files in the same way as posts as flat 
+  namespaced objects
 remove temporary auth setup logging in user automatically
 handle failure states on requests
 
