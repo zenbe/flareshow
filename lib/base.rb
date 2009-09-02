@@ -18,9 +18,8 @@ module Flareshow
   } unless defined? ResourceToClassMap
   ClassToResourceMap = ResourceToClassMap.invert unless defined? ClassToResourceMap
   
-  # Flareshow objects are subclasses of OpenStruct
-  # allowing for a flexible definition of properties
-  # as JSON returned from server requests
+  # the base class for Flareshow can be inherited from to create Shareflow resource
+  # classes or the class methods can be used to interact with the API directly
   class Base
     # =================
     # = Class Methods =

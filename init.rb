@@ -1,14 +1,19 @@
 ROOT = File.dirname(__FILE__) unless defined? ROOT
 $:.unshift(File.join(ROOT, "lib"))
 
+# gems
+require 'rubygems' #TODO fix
 require 'json'
 require 'curb'
-require 'ostruct'
-require 'logger'
 require 'facets'
 require 'facets/dictionary'
 require 'uuid'
 
+# std lib
+require 'ostruct'
+require 'logger'
+
+# app
 require 'base'
 
 # logging
