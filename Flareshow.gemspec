@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{flareshow}
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Will Bailey"]
@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
      "lib/membership.rb",
      "lib/post.rb",
      "lib/resource.rb",
+     "lib/searchable.rb",
      "lib/server.rb",
      "lib/service.rb",
      "lib/user.rb",
