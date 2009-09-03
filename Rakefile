@@ -11,7 +11,11 @@ begin
     gem.homepage = "http://github.com/willbailey/flareshow"
     gem.authors = ["Will Bailey"]
     gem.add_development_dependency "thoughtbot-shoulda"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_development_dependency "json"
+    gem.add_development_dependency "curb"
+    gem.add_development_dependency "facets"
+    gem.add_development_dependency "facets/dictionary"
+    gem.add_development_dependency "uuid"
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
