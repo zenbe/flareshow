@@ -1,5 +1,7 @@
 class Comment < Flareshow::Resource
   
+  extend Flareshow::Searchable
+  
   # permalink to this comment
   def permalink(mobile=false)
     if mobile

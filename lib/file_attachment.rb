@@ -1,5 +1,7 @@
 class FileAttachment < Flareshow::Resource
   
+  extend Flareshow::Searchable
+  
   # =================
   # = Class Methods =
   # =================

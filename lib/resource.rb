@@ -1,6 +1,8 @@
 class Flareshow::Resource
   
   class << self
+    attr_accessor :read_only, :attr_accessible
+    
     # return the resource key for this resource
     def resource_key
       Flareshow::ClassToResourceMap[self.name]
@@ -26,10 +28,9 @@ class Flareshow::Resource
     # the keyed resources for the model performing the query
     def find(params={})
       response = Flareshow::Service.query({resource_key => params})
-      cache_response(response)
-      (response["resources"] || {})[resource_key]
+      (cache_response(response) || {})[resource_key]
     end
-
+    
     # create a resource local and sync it to the server
     def create(params={})
       new(params).save
@@ -80,7 +81,7 @@ class Flareshow::Resource
   
   # destroy the resource on the server
   def destroy
-    response = self.class.commit({resource_key => [{"id" => id, "_removed" => true}]})
+    response = Flareshow::Service.commit({resource_key => [{"id" => id, "_removed" => true}]})
     cache_response(response)
     mark_destroyed!
     self
@@ -93,6 +94,7 @@ class Flareshow::Resource
   
   private
   
+  # clear the element of the cache
   def mark_destroyed!
     self.freeze
     self._removed=true 

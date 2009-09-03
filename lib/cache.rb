@@ -7,20 +7,25 @@ class Flareshow::CacheManager
     def assimilate_resources(data)
       # process each resource key and generate a new object
       # or merge the object data with an existing object
-      data.each do |resource_pair|
+      data.inject({}) do |memo,resource_pair|
         resource_key, resources = resource_pair[0], resource_pair[1]
+        
+        fs_resource_array = memo[resource_key] ||= []
+        
         klass = Kernel.const_get(Flareshow::ResourceToClassMap[resource_key])
-        next unless klass
-        resources = resources.map do |resource_data|
-          item = cache.get_resource(resource_key, resource_data["id"])
-          if item
-            item.update(resource_data, :server)
-          else
-            item = klass.new(resource_data, :server) 
+        if klass
+          resources.each do |resource_data|
+            item = cache.get_resource(resource_key, resource_data["id"])
+            if item
+              item.update(resource_data, :server)
+            else
+              item = klass.new(resource_data, :server) 
+            end
+            cache.set_resource(resource_key, item.id, item)
+            fs_resource_array << item
           end
-          cache.set_resource(resource_key, item.id, item)
-          item
         end
+        memo
       end
     end
     

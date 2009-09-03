@@ -39,6 +39,7 @@ end
 require File.join(ROOT, 'service')
 require File.join(ROOT, 'resource')
 require File.join(ROOT, 'cache')
+require File.join(ROOT, 'searchable')
 
 # logging
 DEFAULT_LOGGER = Logger.new(STDOUT) unless defined?(DEFAULT_LOGGER)

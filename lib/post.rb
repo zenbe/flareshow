@@ -1,11 +1,13 @@
 class Post < Flareshow::Resource
   
+  extend Flareshow::Searchable
+  
   # permalink to this post
   def permalink(mobile=false)
     if mobile
-      "http://#{Flareshow::Base.server.host}/#{Flareshow::Base.server.domain}/shareflow/mobile/post/#{id}"
+      "http://#{Flareshow::Service.server.host}/#{Flareshow::Service.server.domain}/shareflow/mobile/post/#{id}"
     else
-      "http://#{Flareshow::Base.server.host}/#{Flareshow::Base.server.domain}/shareflow/p/#{id}"
+      "http://#{Flareshow::Service.server.host}/#{Flareshow::Service.server.domain}/shareflow/p/#{id}"
     end
   end
   
