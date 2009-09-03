@@ -9,7 +9,7 @@ class Flareshow::Service
     
     # setup the service to use a particular host and domain
     def configure(subdomain, host='biz.zenbe.com')
-      self.server=Server.new(host, domain)
+      self.server=Server.new(host, subdomain)
     end
     
     # return the authentication endpoint for a given host and domain
