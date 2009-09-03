@@ -1,23 +1,4 @@
 module Flareshow
-  
-  # default parameters that are included with query
-  # requests unless they are explicitly overridden
-  DEFAULT_PARAMS = {:order => "created_at desc"} unless defined? DEFAULT_PARAMS
-  
-  # mappings to allow easy conversion from the
-  # response keys the server sends back in JSUP
-  # messages
-  ResourceToClassMap = {
-    "flows"       => "Flow",
-    "posts"       => "Post",
-    "comments"    => "Comment",
-    "files"       => "FileAttachment",
-    "memberships" => "Membership",
-    "invitations" => "Invitation",
-    "users"       => "User"
-  } unless defined? ResourceToClassMap
-  ClassToResourceMap = ResourceToClassMap.invert unless defined? ClassToResourceMap
-  
   # the base class for Flareshow can be inherited from to create Shareflow resource
   # classes or the class methods can be used to interact with the API directly
   class Base
