@@ -1,11 +1,11 @@
-class Comment < Flareshow::Base
+class Comment < Flareshow::Resource
   
   # permalink to this comment
   def permalink(mobile=false)
     if mobile
-      "http://#{Flareshow::Base.server.host}/#{Flareshow::Base.server.domain}/shareflow/mobile/post/#{reply_to}"
+      "http://#{Flareshow::Service.server.host}/#{Flareshow::Service.server.domain}/shareflow/mobile/post/#{reply_to}"
     else
-      "http://#{Flareshow::Base.server.host}/#{Flareshow::Base.server.domain}/shareflow/p/#{reply_to}?comment_id#{id}"
+      "http://#{Flareshow::Service.server.host}/#{Flareshow::Service.server.domain}/shareflow/p/#{reply_to}?comment_id#{id}"
     end
   end
   

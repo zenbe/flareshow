@@ -1,11 +1,13 @@
 TODO:
+write tests with Fakeweb
 flesh out more resource methods
 make post requests with embedded file attachments respond with the file attachments for now...later we need to allow the creation of files in the same way as posts as flat 
   namespaced objects
-remove temporary auth setup logging in user automatically
 handle failure states on requests
+namespace auth requests to be consistent with other api calls
 
 TODONE:
+remove temporary auth setup logging in user automatically
 
 QUESTIONS:
 should authentication responses look like query and commit responses namespacing is applied differently in authentication currently?

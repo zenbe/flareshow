@@ -1,54 +1,43 @@
 class Flareshow::Resource
   
   class << self
+    # return the resource key for this resource
+    def resource_key
+      Flareshow::ClassToResourceMap[self.name]
+    end
+    
     # find an existing instance of this object in the client or create a new one
-    def get(id_or_object, source = :client)
-      o = if id_or_object.is_a?(String) || id_or_object.is_a?(Integer)
-        id = id_or_object.to_s
-        store[id] ||= new({"id" => id}, source)
-      elsif
-        id = id_or_object["id"]
-        store[id] ||= new(id_or_object, source)
-      end
+    def get_from_cache(id)
+      store.get_resource(resource_key, id)
     end
-  
+    
     # list out the instances in memory
-    def list
-      store.each_value do |v|
-        Util.log_info(v.inspect)
-      end
+    def list_cache
+      store.list_resource(resource_key)
     end
-  
-    # get all the resources of this type from the server
-    def all
-      key = Flareshow::ClassToResourceMap[self.name]
-      params = DEFAULT_PARAMS
-      self.query({key => params})
+    
+    # store the response resources in the cache
+    def cache_response(response)
+      Flareshow::CacheManager.assimilate_resources(response["resources"])
     end
   
     # find a resource by querying the server
-    def find(params)
-      key = Flareshow::ClassToResourceMap[self.name]
-      params = DEFAULT_PARAMS.merge(params)
-      (self.query({key => params}) || {})[key]
+    # store the results in the cache and return
+    # the keyed resources for the model performing the query
+    def find(params={})
+      response = Flareshow::Service.query({resource_key => params})
+      cache_response(response)
+      (response["resources"] || {})[resource_key]
     end
-
-    # return the first resource in the client store
-    # or go to the server and fetch one item
-    def first
-      return store.first if store.size > 0
-      find({:limit => 1})
-      return store.first
-    end
-  
 
     # create a resource local and sync it to the server
-    def create(params)
+    def create(params={})
       new(params).save
     end
-  
+    
+    #
     def store
-      @objects ||= Dictionary.new
+      Flareshow::CacheManager.cache
     end
   end
   
@@ -59,30 +48,40 @@ class Flareshow::Resource
     data["id"] = UUID.generate.upcase if source == :client
     update(data, source)
   end
-
+  
+  # return the resource key for this resource
+  def resource_key
+    Flareshow::ClassToResourceMap[self.class.name]
+  end
+  
+  # store a resource in the cache
+  def cache
+    self.class.store.store.set_resource(resource_key, id, self)
+  end
+  
   # ==============================
   # = Server Persistence Actions =
   # ==============================
   
   # reload the resource from the server
-  def refresh(callbacks={})
-    key = Flareshow::ClassToResourceMap[self.class.name]
-    results = self.class.query({key => {"id" => id}}, callbacks)
+  def refresh
+    results = self.find({"id" => id})
     mark_destroyed! if results.empty?
     self
   end
   
   # save a resource to the server
-  def save(callbacks={})
+  def save
     key = Flareshow::ClassToResourceMap[self.class.name]
-    self.class.commit({key => [(self.changes || {}).merge({"id" => id})] }, callbacks)
+    response = Flareshow::Service.commit({resource_key => [(self.changes || {}).merge({"id" => id})] })
+    cache_response(response)
     self
   end
   
   # destroy the resource on the server
-  def destroy(callbacks={})
-    key = Flareshow::ClassToResourceMap[self.class.name]
-    self.class.commit({key => [{"id" => id, "_removed" => true}]}, callbacks)
+  def destroy
+    response = self.class.commit({resource_key => [{"id" => id, "_removed" => true}]})
+    cache_response(response)
     mark_destroyed!
     self
   end
@@ -125,7 +124,7 @@ class Flareshow::Resource
   # of the original state of each intstance variable when it is provided by
   # the server
   def set(key, value, source = :client)
-    # Util.log_info("setting #{key} : #{value}")
+    # Flareshow::Util.log_info("setting #{key} : #{value}")
     @data["original_#{key}"] = value if source == :server
     @data[key.to_s]=value
   end

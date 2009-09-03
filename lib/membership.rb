@@ -1,3 +1,3 @@
-class Membership < Flareshow::Base
+class Membership < Flareshow::Resource
   
 end

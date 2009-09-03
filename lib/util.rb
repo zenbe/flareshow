@@ -1,4 +1,4 @@
-class Util
+class Flareshow::Util
 
   class << self
     def log_info(message)

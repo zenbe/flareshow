@@ -1,26 +1,70 @@
 # provides an interface for various
 # caches that flareshow might use
-class Flareshow::Cache
+class Flareshow::CacheManager
   
   class << self
     # assimilate the resources provided in the response
-    def assimilate_resources(response)
-      results = {}
+    def assimilate_resources(data)
       # process each resource key and generate a new object
       # or merge the object data with an existing object
-      response[:resources].each do |resource_pair|
+      data.each do |resource_pair|
         resource_key, resources = resource_pair[0], resource_pair[1]
         klass = Kernel.const_get(Flareshow::ResourceToClassMap[resource_key])
         next unless klass
-        resources.each do |resource_data|
-          item = klass.get(resource_data["id"], :server)
-          item.update(resource_data, :server)
-          results[resource_key] ||= []
-          results[resource_key].push(item)
+        resources = resources.map do |resource_data|
+          item = cache.get_resource(resource_key, resource_data["id"])
+          if item
+            item.update(resource_data, :server)
+          else
+            item = klass.new(resource_data, :server) 
+          end
+          cache.set_resource(resource_key, item.id, item)
+          item
         end
       end
-      results
     end
+    
+    # get the managed cache object
+    def cache
+      @cache ||= Flareshow::Cache.new
+    end
+    
   end
   
+  
+end
+
+# a simple in memory cache for Flareshow objects
+class Flareshow::Cache
+    
+    # load a resource from the cache
+    def get_resource(resource_key, id)
+      resource_cache(resource_key)[id]
+    end
+    
+    # set a resource in the cache
+    def set_resource(resource_key, id, object)
+      resource_cache(resource_key)[id] = object
+    end
+    
+    # remove all cached objects
+    def flush
+      data = {}
+    end
+    
+    # number of cached objects
+    def size
+      data.values.inject(0){|m,v| m+=v.size}
+    end
+    
+    private
+    def data
+      @cache ||= {}
+    end
+    
+    # get a specific resource dictionary
+    def resource_cache(resource_key)
+      data[resource_key] ||= Dictionary.new
+    end
+    
 end

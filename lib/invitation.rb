@@ -1,3 +1,3 @@
-class Invitation < Flareshow::Base
+class Invitation < Flareshow::Resource
   
 end

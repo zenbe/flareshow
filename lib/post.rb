@@ -1,4 +1,4 @@
-class Post < Flareshow::Base
+class Post < Flareshow::Resource
   
   # permalink to this post
   def permalink(mobile=false)

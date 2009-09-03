@@ -1,4 +1,4 @@
-class User < Flareshow::Base
+class User < Flareshow::Resource
 
   # =================
   # = Class Methods =
@@ -12,27 +12,18 @@ class User < Flareshow::Base
     
     # authenticate user credentials
     def log_in(login, password)
-      authenticate({:login => login, :password => password}, 
-        {
-          :on_success  => method(:on_authentication_success),
-          :on_failure  => method(:on_authentication_failure)
-        }
-      )
+      response = Flareshow::Service.authenticate(login, password)
+      user_data = response["resources"]["data"]
+      Flareshow::CacheManager.assimilate_resources({resource_key => [user_data]})
+      @current = User.get_from_cache(user_data["id"])
     end
     
-    private 
-    
-    # =============
-    # = Callbacks =
-    # =============
-    # login success callback
-    def on_authentication_success(response_body)
-      @current = User.get(response_body["data"], :server)
-    end
-
-    # login failed callback
-    def on_authentication_failure(response_body)
-      Util.log_error("failed to login: #{response_body}")
+    # ==================
+    # = Authentication =
+    # ==================
+    def logout
+      Flareshow::Service.logout
+      @current = nil
     end
     
   end
@@ -45,30 +36,23 @@ class User < Flareshow::Base
   # = Associations =
   # ================
   def flows
-    Flow.find({"user_id" => {"in" => id}})
+    Flow.find({"user_id" => ["in", id]})
   end
   
   def posts
-    Post.find({"user_id" => {"in" => id}})
+    Post.find({"user_id" => ["in", id]})
   end
   
   def comments
-    Comment.find({"user_id" => {"in" => id}})
+    Comment.find({"user_id" => ["in", id]})
   end
   
   def files
-    FileAttachment.find({"user_id" => {"in" => id}})
+    File.find({"user_id" => ["in", id]})
   end
   
-  # ==================
-  # = Authentication =
-  # ==================
-  def logout
-    
-  end
-
   def logged_in?
-    auth_token
+    @current
   end
   
 end

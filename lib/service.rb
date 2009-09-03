@@ -8,7 +8,8 @@ class Flareshow::Service
     attr_accessor :server
     
     # setup the service to use a particular host and domain
-    def configure(subdomain, host='biz.zenbe.com')
+    def configure(subdomain=nil, host='biz.zenbe.com')
+      raise Flareshow::ConfigurationException unless subdomain
       self.server=Server.new(host, subdomain)
     end
     
@@ -19,12 +20,12 @@ class Flareshow::Service
     
     # return the api endpoint for a given host and domain
     def api_endpoint
-      "http://#{Flareshow::Base.server.host}/#{Flareshow::Base.server.domain}/shareflow/api/v2.json"
+      "http://#{server.host}/#{server.domain}/shareflow/api/v2.json"
     end
     
     # has the server been configured?
     def server_defined?
-      !!Flareshow::Base.server
+      !!server
     end
     
     # make a post request to an endpoint
@@ -33,7 +34,7 @@ class Flareshow::Service
     #  - headers
     #  - body
     def post(url, params)
-      raise ConfigurationException unless server_defined?
+      raise Flareshow::ConfigurationException unless server_defined?
       request = Curl::Easy.new(url) do |curl|
         curl.headers = {
           'Accept'        => 'application/json',
@@ -47,7 +48,7 @@ class Flareshow::Service
     
     # do a get request
     def http_get(url)
-      request = Curl::Easy.new(url + "?key=#{User.current.get("auth_token")}") do |curl|
+      request = Curl::Easy.new(url + "?key=#{@key}") do |curl|
         curl.headers = {
           'User-Agent'    => 'flareshow 0.1'
         }
@@ -58,30 +59,43 @@ class Flareshow::Service
     
     # get the interesting bits out of the curl response
     def process_response(request)
-      response = {:status_code => request.response_code, :headers => request.header_str, :body => request.body_str}
-      if request.content_type == "application/json"
-        response[:resources] = JSON.parse(response[:body])
-        Util.log_info(reponse[:status_code])
+      response = {"status_code" => request.response_code, "headers" => request.header_str, "body" => request.body_str}
+      if (/json/i).match(request.content_type)
+        response["resources"] = JSON.parse(response["body"])
+        Flareshow::Util.log_info(response["status_code"])
       end
       response
     end
     
     # authenticate with the server using an http post
-    def authenticate(params={})
+    def authenticate(login, password)
       params = [
-        Curl::PostField.content("login", params[:login]),
-        Curl::PostField.content("password", params[:password])
+        Curl::PostField.content("login", login),
+        Curl::PostField.content("password", password)
       ]
-      post(auth_endpoint, params)
+      response = post(auth_endpoint, params)
+      Flareshow::Util.log_info(response)
+      # store the auth token returned from the authentication request
+      if response["status_code"] == 200
+        @key = response["resources"]["data"]["auth_token"]
+        response
+      else
+        raise Flareshow::AuthenticationFailed
+      end
+    end
+    
+    # clear the authenticated session
+    def logout
+      @key = nil
     end
     
     # query the server with an http post of the query params
     def query(params={})
-      raise UserRequiredException unless User.current
+      raise Flareshow::AuthenticationRequired unless @key
 
       # add the json request parts
       params = [
-        Curl::PostField.content("key", User.current.get("auth_token"), 'application/json'),
+        Curl::PostField.content("key", @key, 'application/json'),
         Curl::PostField.content("query", params.to_json, 'application/json')
       ]
       
@@ -90,6 +104,8 @@ class Flareshow::Service
     
     # commit changes to the server with an http post
     def commit(params={}, files=[])
+      raise Flareshow::AuthenticationRequired unless @key
+
       curl_params = []
       has_files = false
       if params["posts"]
@@ -109,7 +125,7 @@ class Flareshow::Service
       
       # add the json request parts
       curl_params += [
-        Curl::PostField.content("key", User.current.get("auth_token"), 'application/json'),
+        Curl::PostField.content("key", @key, 'application/json'),
         Curl::PostField.content("data", params.to_json, 'application/json')
       ]
       

@@ -1,4 +1,4 @@
-class FileAttachment < Flareshow::Base
+class FileAttachment < Flareshow::Resource
   
   # =================
   # = Class Methods =
@@ -17,7 +17,7 @@ class FileAttachment < Flareshow::Base
     unless url.match(/http/)
       url = "http://#{Flareshow::Base.server.host}/#{Flareshow::Base.server.domain}#{url}"
     end
-    Util.log_info("getting #{url}")
+    Flareshow::Util.log_info("getting #{url}")
     self.class.http_get(url)
   end
   

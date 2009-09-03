@@ -1,4 +1,4 @@
-class Flow < Flareshow::Base
+class Flow < Flareshow::Resource
   
   # =================
   # = Class Methods =
