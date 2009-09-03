@@ -43,7 +43,7 @@ require File.join(ROOT, 'searchable')
 
 # logging
 DEFAULT_LOGGER = Logger.new(STDOUT) unless defined?(DEFAULT_LOGGER)
-
+DEFAULT_LOGGER.level = Logger::ERROR
 Dir.glob(File.join(ROOT, "*.rb")).each{|lib| require lib}
 
 # check for presence of config file
