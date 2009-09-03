@@ -1,5 +1,4 @@
 ROOT = File.dirname(__FILE__) unless defined? ROOT
-$:.unshift(File.join(ROOT, "lib"))
 
 # gems
 require 'rubygems' #TODO fix
@@ -19,4 +18,4 @@ require 'base'
 # logging
 DEFAULT_LOGGER = Logger.new(STDOUT) unless defined?(DEFAULT_LOGGER)
 
-Dir.glob(File.join(ROOT, "**", "*.rb")).each{|lib| require lib}
+Dir.glob(File.join(ROOT, "*.rb")).each{|lib| require lib}
