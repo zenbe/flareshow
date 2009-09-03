@@ -9,18 +9,16 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Will Bailey"]
-  s.date = %q{2009-09-02}
+  s.date = %q{2009-09-03}
   s.description = %q{TODO: a ruby gem for interacting with the shareflow collaboration service by Zenbe}
   s.email = %q{will.bailey@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc"
+     "README.txt"
   ]
   s.files = [
-    ".document",
-     ".gitignore",
+    "Flareshow.gemspec",
      "LICENSE",
-     "README.rdoc",
      "Rakefile",
      "TODO",
      "VERSION",
@@ -43,6 +41,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/willbailey/flareshow}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
+  s.rubyforge_project = %q{flareshow}
   s.rubygems_version = %q{1.3.1}
   s.summary = %q{TODO: a ruby gem for interacting with the shareflow collaboration service}
   s.test_files = [
@@ -56,10 +55,25 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<thoughtbot-shoulda>, [">= 0"])
+      s.add_development_dependency(%q<json>, [">= 0"])
+      s.add_development_dependency(%q<curb>, [">= 0"])
+      s.add_development_dependency(%q<facets>, [">= 0"])
+      s.add_development_dependency(%q<facets/dictionary>, [">= 0"])
+      s.add_development_dependency(%q<uuid>, [">= 0"])
     else
       s.add_dependency(%q<thoughtbot-shoulda>, [">= 0"])
+      s.add_dependency(%q<json>, [">= 0"])
+      s.add_dependency(%q<curb>, [">= 0"])
+      s.add_dependency(%q<facets>, [">= 0"])
+      s.add_dependency(%q<facets/dictionary>, [">= 0"])
+      s.add_dependency(%q<uuid>, [">= 0"])
     end
   else
     s.add_dependency(%q<thoughtbot-shoulda>, [">= 0"])
+    s.add_dependency(%q<json>, [">= 0"])
+    s.add_dependency(%q<curb>, [">= 0"])
+    s.add_dependency(%q<facets>, [">= 0"])
+    s.add_dependency(%q<facets/dictionary>, [">= 0"])
+    s.add_dependency(%q<uuid>, [">= 0"])
   end
 end

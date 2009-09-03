@@ -16,6 +16,7 @@ begin
     gem.add_development_dependency "facets"
     gem.add_development_dependency "facets/dictionary"
     gem.add_development_dependency "uuid"
+    gem.rubyforge_project = "flareshow"
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
