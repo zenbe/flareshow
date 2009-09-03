@@ -47,6 +47,10 @@ class Flareshow::Cache
       resource_cache(resource_key)[id] = object
     end
     
+    def list_resource(resource_key)
+      resource_cache(resource_key)
+    end
+    
     # remove all cached objects
     def flush
       data = {}
@@ -58,6 +62,7 @@ class Flareshow::Cache
     end
     
     private
+    # data store for the cache
     def data
       @cache ||= {}
     end
