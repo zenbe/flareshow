@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{flareshow}
-  s.version = "0.1.0"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Will Bailey"]
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
      "Rakefile",
      "TODO",
      "VERSION",
-     "lib/base.rb",
+     "lib/cache.rb",
      "lib/comment.rb",
      "lib/exceptions.rb",
      "lib/file_attachment.rb",
@@ -33,7 +33,9 @@ Gem::Specification.new do |s|
      "lib/invitation.rb",
      "lib/membership.rb",
      "lib/post.rb",
+     "lib/resource.rb",
      "lib/server.rb",
+     "lib/service.rb",
      "lib/user.rb",
      "lib/util.rb",
      "test/flareshow_test.rb",
