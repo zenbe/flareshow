@@ -9,7 +9,7 @@ class Flow < Flareshow::Resource
   class << self
     # find a flow by name
     def find_by_name(name)
-      self.find({:name => name})
+      self.first({:name => name})
     end
   end
   
