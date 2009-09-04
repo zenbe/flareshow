@@ -33,9 +33,17 @@ class Flareshow::Resource
     # store the results in the cache and return
     # the keyed resources for the model performing the query
     def find(params={})
-      params = default_params.merge({resource_key => params})
+      params = default_params.merge(params)
       response = Flareshow::Service.query({resource_key => params})
       (cache_response(response) || {})[resource_key]
+    end
+    
+    # find just one resource matching the conditions specified
+    def first(params={})
+      params = default_params.merge(params)
+      params = params.merge({"limit" => 1})
+      response = Flareshow::Service.query({resource_key => params})
+      (cache_response(response) || {})[resource_key].first
     end
     
     # create a resource local and sync it to the server
@@ -117,7 +125,7 @@ class Flareshow::Resource
   def mark_destroyed!
     self.freeze
     self._removed=true 
-    self.class.store.delete_resource(id)
+    self.class.store.delete_resource(resource_key, id)
   end
   
   public
@@ -151,7 +159,9 @@ class Flareshow::Resource
   # the server
   def set(key, value, source = :client)
     raise Flareshow::APIAccessException if self.class.read_only && source == :client
-    if self.class.attr_accessible && !self.class.attr_accessible.include?(key.intern) && source == :client
+    if self.class.attr_accessible && 
+      !(/_removed/).match(key.to_s) &&
+      !self.class.attr_accessible.include?(key.to_sym) && source == :client
       Flareshow::Util.log_error "#{self.class.name}.#{key} is not a writable field"
       raise Flareshow::APIAccessException 
     end

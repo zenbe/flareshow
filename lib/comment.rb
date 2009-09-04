@@ -14,4 +14,15 @@ class Comment < Flareshow::Resource
     end
   end
   
+  # get the post for this comment
+  def post
+    Post.first(:id => post_id)
+  end
+  
+  # user for this post
+  def user
+    return User.current unless user_id
+    User.first({:id => user_id})
+  end
+  
 end

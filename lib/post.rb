@@ -26,6 +26,7 @@ class Post < Flareshow::Resource
     c.save
   end
   
+  # build a new file object on the client but don't commit to the server immediately
   def build_file(file_path)
     self.files ||= []
     self.files += [{"part_id" => "file_#{UUID.generate}", "file_path" => file_path}]
@@ -38,4 +39,27 @@ class Post < Flareshow::Resource
     self.save
     self.files = nil
   end
+  
+  # persisted files for this post
+  def files
+    FileAttachment.find({:post_id => id})
+  end
+  
+  # comments for this post
+  def comments
+    Comment.find({:post_id => id})
+  end
+  
+  # user for this post
+  def user
+    return User.current unless user_id
+    User.first({:id => user_id})
+  end
+  
+  # get the flow for this post
+  def flow
+    return false unless flow_id
+    Flow.first({:id => flow_id})
+  end
+  
 end

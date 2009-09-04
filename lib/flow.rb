@@ -56,4 +56,23 @@ class Flow < Flareshow::Resource
     p.save
   end
   
+  # posts for this flow...only returns the first 100 (API max)
+  # to load all posts you can interact with the Service class directly
+  # to loop through in batches of 100 using the offset parameter or 
+  # create a flow object and override this method with the looping logic
+  def posts
+    Post.find(:flow_id => id)
+  end
+  
+  # list the invitations to this flow
+  def list_invitations
+    Invitation.find(:flow_id => id)
+  end
+  
+  # list all users on the flow currently
+  def list_users
+    response = Flareshow::Service.query({:flows=>{:limit => 1, :include=>['users']}})
+    (Flareshow::Service.cache_response(response) || {})["users"]
+  end
+  
 end

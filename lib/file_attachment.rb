@@ -25,4 +25,16 @@ class FileAttachment < Flareshow::Resource
     self.class.http_get(url)
   end
   
+  # post for this file
+  def post
+    return false unless post_id
+    Post.find({:id => post_id})
+  end
+  
+  # get the user for this file
+  def user
+    p = post && post.first
+    p.user && p.user.first
+  end
+  
 end
