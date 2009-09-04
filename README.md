@@ -1,7 +1,17 @@
+       ___ ___                                 __                            
+     /'___\\_ \                               /\ \                           
+    /\ \__///\ \      __     _ __   __    ____\ \ \___     ___   __  __  __  
+    \ \ ,__\\ \ \   /'__`\  /\`'__\'__`\ /',__\\ \  _ `\  / __`\/\ \/\ \/\ \ 
+     \ \ \_/ \_\ \_/\ \L\.\_\ \ \/\  __//\__, `\\ \ \ \ \/\ \L\ \ \ \_/ \_/ \
+      \ \_\  /\____\ \__/.\_\\ \_\ \____\/\____/ \ \_\ \_\ \____/\ \___x___/'
+       \/_/  \/____/\/__/\/_/ \/_/\/____/\/___/   \/_/\/_/\/___/  \/__//__/
+    
+        ~ a ruby wrapper for the Zenbe Shareflow API
+
+
 # Overview
 
-Flareshow provides a ruby wrapper around the shareflow json rpc wire protocol.  For more information about the Shareflow API see:
-<Shareflow API Docs Link>
+Flareshow provides a ruby wrapper around the shareflow json rpc wire protocol.  For more information about the Shareflow API see: <Shareflow API Docs Link>
 
 # Authentication
 
