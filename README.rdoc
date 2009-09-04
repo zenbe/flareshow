@@ -27,10 +27,9 @@ Once you've authenticated you can choose to use either interact directly with th
 
 # the following code will read all posts on the server in a loop
 
-per_request = 30 
-
+<tt>
+per_request = 30
 results = []
-
 offset = 0
 
 loop do 
@@ -38,6 +37,7 @@ loop do
     offset += per_request
     break if results.empty?
 end
+</tt>
 
 <b>Upload a file to a Post</b>
 
