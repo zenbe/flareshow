@@ -14,6 +14,7 @@ password  : password
 To authenticate manually do the following:
 
 Flareshow::Service.configure(<subdomain>)
+
 Flareshow.authenticate(<login>, <password>)
 
 == usage
@@ -26,19 +27,24 @@ Once you've authenticated you can choose to use either interact directly with th
 
 # the following code will read all posts on the server in a loop
 
-    per_request = 30 
-    results = []
-    offset = 0
-    loop do 
-      results << Post.find(:offset => offset, :limit => per_request)
-      offset += per_request
-      break if results.empty?
-    end
+per_request = 30 
+
+results = []
+
+offset = 0
+
+loop do 
+    results << Post.find(:offset => offset, :limit => per_request)
+    offset += per_request
+    break if results.empty?
+end
 
 <b>Upload a file to a Post</b>
 
 p=Post.new()
+
 p.save
+
 p.create_file("/path/to/your/file")
 
 <b>Searching for a post</b>
