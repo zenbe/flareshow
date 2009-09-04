@@ -19,10 +19,10 @@ class FileAttachment < Flareshow::Resource
   def download
     url = self.url
     unless url.match(/http/)
-      url = "http://#{Flareshow::Base.server.host}/#{Flareshow::Base.server.domain}#{url}"
+      url = "http://#{Flareshow::Service.server.host}/#{Flareshow::Service.server.domain}#{url}"
     end
     Flareshow::Util.log_info("getting #{url}")
-    self.class.http_get(url)
+    Flareshow::Service.http_get(url)
   end
   
   # post for this file
