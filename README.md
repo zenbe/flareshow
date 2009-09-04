@@ -60,9 +60,11 @@ Flareshow offers an ActiveRecord like syntax for retrieving and manipulating mod
     offset = 0
 
     loop do 
-      results << Post.find(:offset => offset, :limit => per_request)
+      posts = Post.find(:offset => offset, :limit => per_request)
+      results += posts
+      puts results.size
       offset += per_request
-      break if results.empty?
+      break if posts.empty?
     end
 
 #### upload a file to a Post
