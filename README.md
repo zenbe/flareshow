@@ -3,10 +3,10 @@ Overview
 
 Flareshow provides a ruby wrapper around the shareflow json rpc wire protocol.  For more information about the Shareflow API see:
 <Shareflow API Docs Link>
-   
+
 Authentication
 ==============
-   
+
 All actions in Flareshow require authenticationFlareshow can automatically authenticate you against your shareflow server.  Just create a YAML formatted .flareshowrc file in your home directory with the following keys
 
 subdomain : demo.zenbe.com
@@ -15,9 +15,8 @@ password  : password
 
 To authenticate manually do the following:
 
-Flareshow::Service.configure(<subdomain>)
-
-Flareshow.authenticate(<login>, <password>)
+    Flareshow::Service.configure(<subdomain>)
+    Flareshow.authenticate(<login>, <password>)
 
 Usage
 =====
