@@ -1,11 +1,9 @@
-Overview
-========
+# Overview
 
 Flareshow provides a ruby wrapper around the shareflow json rpc wire protocol.  For more information about the Shareflow API see:
 <Shareflow API Docs Link>
 
-Authentication
-==============
+# Authentication
 
 All actions in Flareshow require authenticationFlareshow can automatically authenticate you against your shareflow server.  Just create a YAML formatted .flareshowrc file in your home directory with the following keys
 
@@ -18,16 +16,13 @@ To authenticate manually do the following:
     Flareshow::Service.configure(<subdomain>)
     Flareshow.authenticate(<login>, <password>)
 
-Usage
-=====
+# Usage
 
 Once you've authenticated you can choose to use either interact directly with the Flareshow::Service or use the Flareshow::Resource domain models which encapsulate the domain logic of Shareflow providing a friendlier development environment.
 
-Examples
-========
+# Examples
 
-accessing models and associations
-----------------------
+### accessing models and associations
 
 Flareshow offers an ActiveRecord like syntax for retrieving and manipulating models.
 
@@ -44,8 +39,7 @@ Flareshow offers an ActiveRecord like syntax for retrieving and manipulating mod
     files.first.download
 
 
-reading posts
--------------
+### reading posts
 
     # the following code will read all posts on the server in a loop
     per_request = 30
@@ -58,28 +52,25 @@ reading posts
       break if results.empty?
     end
 
-upload a file to a Post
------------------------
+### upload a file to a Post
 
     p=Post.new()
     p.save
     p.create_file("/path/to/your/file")
 
-searching for a post
---------------------
+### searching for a post
 
     # posts, files, comments include the searchable mixin
     # and can be searched using full text search capabilities
     # on the server
     results = Post.search("some keywords")
 
-deleting a post or comment
---------------------------
+### deleting a post or comment
+
     Post.first.destroy
     Comment.first.destroy
 
-renaming a flow
----------------
+### renaming a flow
 
     f=Flow.find_by_name('test')
     f.name = 'a different name'
