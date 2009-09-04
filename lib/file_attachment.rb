@@ -1,5 +1,7 @@
 class FileAttachment < Flareshow::Resource
   
+  @read_only=true
+  
   extend Flareshow::Searchable
   
   # =================

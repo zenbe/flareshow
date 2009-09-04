@@ -43,7 +43,19 @@ class Flareshow::Service
         curl.multipart_form_post=true
       end
       request.http_post(*params)
-      process_response(request)
+      response = process_response(request)
+
+      # log a service exception
+      case response["status_code"]
+        when 400
+          log_service_error(response)
+        when 500
+          log_service_error(response)
+        when 403
+          log_service_error(response)
+      end
+        
+      response
     end
     
     # do a get request
@@ -54,7 +66,11 @@ class Flareshow::Service
         }
       end
       request.perform()
-      process_response(request)
+      response = process_response(request)
+      
+      Flareshow::Util.log_error("resource not found") if response["status_code"] == 404
+      
+      response
     end
     
     # get the interesting bits out of the curl response
@@ -62,9 +78,20 @@ class Flareshow::Service
       response = {"status_code" => request.response_code, "headers" => request.header_str, "body" => request.body_str}
       if (/json/i).match(request.content_type)
         response["resources"] = JSON.parse(response["body"])
-        Flareshow::Util.log_info(response["status_code"])
       end
+      Flareshow::Util.log_info(response["status_code"])
+      Flareshow::Util.log_info(response["body"])
       response
+    end
+    
+    # log a service error
+    def log_service_error(response)
+      if response["resources"]
+        Flareshow::Util.log_error(response["resources"]["message"])
+        Flareshow::Util.log_error(response["resources"]["details"]) 
+      else
+        Flareshow::Util.log_error(response["body"])
+      end
     end
     
     # authenticate with the server using an http post
@@ -74,7 +101,6 @@ class Flareshow::Service
         Curl::PostField.content("password", password)
       ]
       response = post(auth_endpoint, params)
-      Flareshow::Util.log_info(response)
       # store the auth token returned from the authentication request
       if response["status_code"] == 200
         @key = response["resources"]["data"]["auth_token"]
@@ -82,11 +108,18 @@ class Flareshow::Service
       else
         raise Flareshow::AuthenticationFailed
       end
+    rescue Exception => e
+      Flareshow::Util.log_error e.message
     end
     
     # clear the authenticated session
     def logout
       @key = nil
+    end
+    
+    # are we authenticated
+    def authenticated?
+      !!@key
     end
     
     # query the server with an http post of the query params

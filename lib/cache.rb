@@ -42,6 +42,10 @@ end
 # a simple in memory cache for Flareshow objects
 class Flareshow::Cache
     
+    # you can create your own cache object and plug it into the cache manager.
+    # The cache class should implement the public methods 
+    # get_resource, set_resource, delete_resource, list_resource, flush and size
+    
     # load a resource from the cache
     def get_resource(resource_key, id)
       resource_cache(resource_key)[id]
@@ -50,6 +54,11 @@ class Flareshow::Cache
     # set a resource in the cache
     def set_resource(resource_key, id, object)
       resource_cache(resource_key)[id] = object
+    end
+    
+    # remove a resource
+    def delete_resource(resource_key, id)
+      resource_cache(resource_key).delete(id)
     end
     
     def list_resource(resource_key)

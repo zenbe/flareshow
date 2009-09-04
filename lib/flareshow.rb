@@ -16,9 +16,6 @@ require 'logger'
 
 # Application Constants and configuration
 module Flareshow
-  # default parameters that are included with query
-  # requests unless they are explicitly overridden
-  DEFAULT_PARAMS = {:order => "created_at desc"} unless defined? DEFAULT_PARAMS
   
   # mappings to allow easy conversion from the
   # response keys the server sends back in JSUP
@@ -48,12 +45,12 @@ Dir.glob(File.join(ROOT, "*.rb")).each{|lib| require lib}
 
 # check for presence of config file
 config_file_path = File.expand_path("~/.flareshowrc")
-if File.exists?(config_file_path)
+if File.exists?(config_file_path) && !Flareshow::Service.authenticated?
   data = YAML.load_file(config_file_path)
   host = data["host"] || "biz.zenbe.com"
   subdomain = data["subdomain"]
+  DEFAULT_LOGGER.level = data["log_level"].to_i if data["log_level"]
   Flareshow::Service.configure(subdomain, host)
-  
   if data["login"] && data["password"]
     User.log_in(data["login"], data["password"])
   end

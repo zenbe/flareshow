@@ -1,5 +1,7 @@
 class User < Flareshow::Resource
-
+  
+  @read_only=true
+  
   # =================
   # = Class Methods =
   # =================

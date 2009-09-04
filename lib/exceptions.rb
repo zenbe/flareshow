@@ -1,13 +1,32 @@
 module Flareshow
+  
+  class MissingRequiredField < Exception
+    def message
+      "you attempted to save an object without providing all of the required fields"
+    end
+  end
+  
+  class APIAccessException < Exception
+    def message 
+      "you've attempted to change an object in a way not permitted by the API"
+    end
+  end
+  
   class ConfigurationException < Exception
-    # exception thrown if the API client is not configured properly
+    def message
+      "the shareflow service connection has not been configured properly"
+    end
   end
 
   class AuthenticationRequired < Exception
-    # exception thrown if a request is made without a logged in user
+    def message
+      "this action requires authentication"
+    end
   end
 
   class AuthenticationFailed < Exception
-    # exception thrown if an auth request fails
+    def message
+      "authentication failed"
+    end
   end
 end

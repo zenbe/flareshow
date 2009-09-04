@@ -1,4 +1,6 @@
 class Post < Flareshow::Resource
+  @attr_accessible = [:content, :flow_id, :files]
+  @attr_required = [:flow_id]
   
   extend Flareshow::Searchable
   

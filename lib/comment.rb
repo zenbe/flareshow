@@ -1,5 +1,8 @@
 class Comment < Flareshow::Resource
   
+  @attr_accessible = [:content, :post_id]
+  @attr_required = [:post_id, :content]
+  
   extend Flareshow::Searchable
   
   # permalink to this comment

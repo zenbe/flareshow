@@ -1,5 +1,8 @@
 class Flow < Flareshow::Resource
   
+  @attr_accessible = [:name]
+  @attr_required = [:name]
+  
   # =================
   # = Class Methods =
   # =================

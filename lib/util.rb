@@ -6,7 +6,7 @@ class Flareshow::Util
     end
 
     def log_error(message)
-      DEFAULT_LOGGER.info(message)
+      DEFAULT_LOGGER.error(message)
     end
   end
 

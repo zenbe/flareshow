@@ -1,7 +1,13 @@
 class Flareshow::Resource
   
   class << self
-    attr_accessor :read_only, :attr_accessible
+    attr_accessor :read_only, :attr_accessible, :attr_required
+    
+    def default_params
+      # default parameters that are included with query
+      # requests unless they are explicitly overridden
+      {:order => "created_at desc"}
+    end
     
     # return the resource key for this resource
     def resource_key
@@ -27,6 +33,7 @@ class Flareshow::Resource
     # store the results in the cache and return
     # the keyed resources for the model performing the query
     def find(params={})
+      params = default_params.merge({resource_key => params})
       response = Flareshow::Service.query({resource_key => params})
       (cache_response(response) || {})[resource_key]
     end
@@ -46,8 +53,9 @@ class Flareshow::Resource
   # build a new Flareshow::Base resource
   def initialize(data={}, source = :client)
     @data = {}
-    data["id"] = UUID.generate.upcase if source == :client
+    Flareshow::Util.log_info("creating #{self.class.name} with data from #{source}")
     update(data, source)
+    @data["id"] = UUID.generate.upcase if source == :client
   end
   
   # return the resource key for this resource
@@ -73,18 +81,29 @@ class Flareshow::Resource
   
   # save a resource to the server
   def save
+    raise Flareshow::APIAccessException if self.class.read_only
     key = Flareshow::ClassToResourceMap[self.class.name]
+    raise Flareshow::MissingRequiredField unless !self.class.attr_required || (self.class.attr_required.map{|a|a.to_s} - @data.keys).empty?
     response = Flareshow::Service.commit({resource_key => [(self.changes || {}).merge({"id" => id})] })
     cache_response(response)
     self
+  rescue Exception => e
+    Flareshow::Util.log_error e.message
+    throw e
+    false
   end
   
   # destroy the resource on the server
   def destroy
+    raise Flareshow::APIAccessException if self.class.read_only
     response = Flareshow::Service.commit({resource_key => [{"id" => id, "_removed" => true}]})
     cache_response(response)
     mark_destroyed!
     self
+  rescue Exception => e
+    Flareshow::Util.log_error e.message
+    throw e
+    false
   end
   
   # has this resource been destroyed
@@ -98,7 +117,7 @@ class Flareshow::Resource
   def mark_destroyed!
     self.freeze
     self._removed=true 
-    self.class.store.delete(id)
+    self.class.store.delete_resource(id)
   end
   
   public
@@ -116,19 +135,33 @@ class Flareshow::Resource
   # keeping track of dirty state if the update came from
   # the client
   def update(attributes, source = :client)
+    raise Flareshow::APIAccessException if self.class.read_only && source == :client
     attributes.each do |p|
       key, value = p[0], p[1]
       self.set(key, value, source)
     end
+  rescue Exception => e
+    Flareshow::Util.log_error e.message
+    throw e
+    false
   end
   
   # keep track of dirty state on the client by maintaining a copy
   # of the original state of each intstance variable when it is provided by
   # the server
   def set(key, value, source = :client)
+    raise Flareshow::APIAccessException if self.class.read_only && source == :client
+    if self.class.attr_accessible && !self.class.attr_accessible.include?(key.intern) && source == :client
+      Flareshow::Util.log_error "#{self.class.name}.#{key} is not a writable field"
+      raise Flareshow::APIAccessException 
+    end
     # Flareshow::Util.log_info("setting #{key} : #{value}")
     @data["original_#{key}"] = value if source == :server
     @data[key.to_s]=value
+  rescue Exception => e
+    Flareshow::Util.log_error e.message
+    throw e
+    false
   end
   
   # get a data value
