@@ -5,22 +5,22 @@
 
 Gem::Specification.new do |s|
   s.name = %q{flareshow}
-  s.version = "0.2.2"
+  s.version = "0.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Will Bailey"]
-  s.date = %q{2009-09-04}
+  s.date = %q{2009-09-09}
   s.description = %q{TODO: a ruby gem for interacting with the shareflow collaboration service by Zenbe}
   s.email = %q{will.bailey@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc"
+     "README.md"
   ]
   s.files = [
     ".gitignore",
      "Flareshow.gemspec",
      "LICENSE",
-     "README.rdoc",
+     "README.md",
      "Rakefile",
      "TODO",
      "VERSION",

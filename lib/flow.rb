@@ -71,8 +71,8 @@ class Flow < Flareshow::Resource
   
   # list all users on the flow currently
   def list_users
-    response = Flareshow::Service.query({:flows=>{:limit => 1, :include=>['users']}})
-    (Flareshow::Service.cache_response(response) || {})["users"]
+    response = Flareshow::Service.query({:flows=>{:id => self.id, :limit => 1, :include=>['users']}})
+    (Flareshow::CacheManager.assimilate_resources(response["resources"]) || {})["users"]
   end
   
 end
