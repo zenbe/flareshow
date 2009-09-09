@@ -90,3 +90,7 @@ Flareshow offers an ActiveRecord like syntax for retrieving and manipulating mod
     f=Flow.find_by_name('test')
     f.name = 'a different name'
     f.save
+    
+### listing all the users on a flow
+f=Flow.first
+f.list_users
