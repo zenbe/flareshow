@@ -1,6 +1,6 @@
 class Flow < Flareshow::Resource
   
-  @attr_accessible = [:name]
+  @attr_accessible = [:name, :remove_members, :uninvite, :invite]
   @attr_required = [:name]
   
   # =================
@@ -38,7 +38,7 @@ class Flow < Flareshow::Resource
   # you must be the owner of the flow to perform
   # this action
   def remove_members(member_ids)
-    self.remove_members = [email_addresses].flatten
+    self.remove_members = [member_ids].flatten
     self.save
   end
   
