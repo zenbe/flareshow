@@ -92,5 +92,6 @@ Flareshow offers an ActiveRecord like syntax for retrieving and manipulating mod
     f.save
     
 ### listing all the users on a flow
-f=Flow.first
-f.list_users
+
+    f=Flow.first
+    f.list_users
