@@ -8,7 +8,7 @@ class Flareshow::Service
     attr_accessor :server
     
     # setup the service to use a particular host and domain
-    def configure(subdomain=nil, host='biz.zenbe.com')
+    def configure(subdomain=nil, host='api.zenbe.com')
       raise Flareshow::ConfigurationException unless subdomain
       self.server=Server.new(host, subdomain)
     end
