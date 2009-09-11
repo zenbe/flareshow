@@ -90,7 +90,29 @@ Flareshow offers an ActiveRecord like syntax for retrieving and manipulating mod
     f=Flow.find_by_name('test')
     f.name = 'a different name'
     f.save
+
+### Inviting someone to a flow (only available if you are the creator of the flow)
+
+    f=Flow.find_by_name('test')
+    f.send_invitations('test@test.com')
     
+    # this also works
+    f.send_invitations(['test1@test.com', 'test2@test.com'])
+    
+### Canceling an invitation to a flow (only available if you are the creator of the flow)
+    
+    f=Flow.find_by_name('test')
+    # revoke an invitation by the email address that was invited
+    f.revoke_invitations('test@test.com')
+
+
+### Removing a user from a flow (only available if you are the creator of the flow)
+
+    f = Flow.find_by_name('test')
+    users = f.list_users # get a listing of the users on the flow
+    # remove the last user in the list from the flow...you cant remove yourself in this way
+    f.remove_members(users.last.id) 
+
 ### listing all the users on a flow
 
     f=Flow.first
