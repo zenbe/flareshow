@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Will Bailey"]
   s.date = %q{2009-09-11}
-  s.description = %q{TODO: a ruby gem for interacting with the shareflow collaboration service by Zenbe}
+  s.description = %q{a ruby gem for interacting with the shareflow collaboration service by Zenbe}
   s.email = %q{will.bailey@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -47,7 +47,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{flareshow}
   s.rubygems_version = %q{1.3.5}
-  s.summary = %q{TODO: a ruby gem for interacting with the shareflow collaboration service}
+  s.summary = %q{a ruby gem for interacting with the shareflow collaboration service}
   s.test_files = [
     "test/flareshow_test.rb",
      "test/test_helper.rb"
