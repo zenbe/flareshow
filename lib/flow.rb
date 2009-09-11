@@ -23,7 +23,7 @@ class Flow < Flareshow::Resource
   end
   
   #invite/reinvite a user to a flow by email address
-  def send_invitions(email_addresses)
+  def send_invitations(email_addresses)
     self.invite = [email_addresses].flatten
     self.save
   end
