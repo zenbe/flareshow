@@ -3,16 +3,18 @@ ROOT = File.dirname(__FILE__) unless defined? ROOT
 # gems
 require 'rubygems' #TODO fix
 require 'json'
-require 'curb'
+require 'rest_client'
 require 'facets'
 require 'facets/dictionary'
 require 'uuid'
-require 'ruby-debug'
 
 # std lib
+require 'net/http'
+require 'net/https'
 require 'ostruct'
 require 'yaml'
 require 'logger'
+require 'ruby-debug'
 
 # Application Constants and configuration
 module Flareshow
