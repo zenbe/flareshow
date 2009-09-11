@@ -15,7 +15,7 @@ class Flareshow::Service
     
     # return the authentication endpoint for a given host and domain
     def auth_endpoint
-      "http://#{server.host}/#{server.domain}/shareflow/api/v2/auth.json"
+      "https://#{server.host}/#{server.domain}/shareflow/api/v2/auth.json"
     end
     
     # return the api endpoint for a given host and domain
