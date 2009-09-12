@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{flareshow}
-  s.version = "0.2.4"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Will Bailey"]
-  s.date = %q{2009-09-11}
+  s.date = %q{2009-09-12}
   s.description = %q{a ruby gem for interacting with the shareflow collaboration service by Zenbe}
   s.email = %q{will.bailey@gmail.com}
   s.extra_rdoc_files = [
@@ -30,8 +30,10 @@ Gem::Specification.new do |s|
      "lib/file_attachment.rb",
      "lib/flareshow.rb",
      "lib/flow.rb",
+     "lib/http_encoding_helper.rb",
      "lib/invitation.rb",
      "lib/membership.rb",
+     "lib/mime_parts.rb",
      "lib/post.rb",
      "lib/resource.rb",
      "lib/searchable.rb",
@@ -46,7 +48,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{flareshow}
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.4}
   s.summary = %q{a ruby gem for interacting with the shareflow collaboration service}
   s.test_files = [
     "test/flareshow_test.rb",
