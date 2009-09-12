@@ -5,17 +5,16 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "flareshow"
-    gem.summary = %Q{TODO: a ruby gem for interacting with the shareflow collaboration service}
-    gem.description = %Q{TODO: a ruby gem for interacting with the shareflow collaboration service by Zenbe}
+    gem.summary = %Q{a ruby gem for interacting with the shareflow collaboration service}
+    gem.description = %Q{a ruby gem for interacting with the shareflow collaboration service by Zenbe}
     gem.email = "will.bailey@gmail.com"
     gem.homepage = "http://github.com/willbailey/flareshow"
     gem.authors = ["Will Bailey"]
-    gem.add_development_dependency "thoughtbot-shoulda"
-    gem.add_development_dependency "json"
-    gem.add_development_dependency "curb"
-    gem.add_development_dependency "facets"
-    gem.add_development_dependency "facets/dictionary"
-    gem.add_development_dependency "uuid"
+    gem.add_dependency "thoughtbot-shoulda"
+    gem.add_dependency "json"
+    gem.add_dependency "curb"
+    gem.add_dependency "facets"
+    gem.add_dependency "uuid"
     gem.rubyforge_project = "flareshow"
   end
 rescue LoadError
