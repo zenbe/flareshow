@@ -97,6 +97,7 @@ class Flareshow::Resource
     self
   rescue Exception => e
     Flareshow::Util.log_error e.message
+    Flareshow::Util.log_error e.backtrace.join("\n")
     throw e
     false
   end
