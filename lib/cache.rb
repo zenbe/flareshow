@@ -11,18 +11,20 @@ class Flareshow::CacheManager
         resource_key, resources = resource_pair[0], resource_pair[1]
         
         fs_resource_array = memo[resource_key] ||= []
-        
-        klass = Kernel.const_get(Flareshow::ResourceToClassMap[resource_key])
-        if klass
-          resources.each do |resource_data|
-            item = cache.get_resource(resource_key, resource_data["id"])
-            if item
-              item.update(resource_data, :server)
-            else
-              item = klass.new(resource_data, :server) 
+        klass_name = Flareshow::ResourceToClassMap[resource_key]
+        klass = Kernel.const_get(klass_name)
+        if klass_name
+          if klass
+            resources.each do |resource_data|
+              item = cache.get_resource(resource_key, resource_data["id"])
+              if item
+                item.update(resource_data, :server)
+              else
+                item = klass.new(resource_data, :server) 
+              end
+              cache.set_resource(resource_key, item.id, item)
+              fs_resource_array << item
             end
-            cache.set_resource(resource_key, item.id, item)
-            fs_resource_array << item
           end
         end
         memo
