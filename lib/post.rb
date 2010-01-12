@@ -42,7 +42,7 @@ class Post < Flareshow::Resource
   
   # persisted files for this post
   def files
-    FileAttachment.find({:post_id => id})
+    FileAttachment.find({:post_id => id}) || []
   end
   
   # comments for this post

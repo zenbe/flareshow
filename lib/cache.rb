@@ -12,8 +12,8 @@ class Flareshow::CacheManager
         
         fs_resource_array = memo[resource_key] ||= []
         klass_name = Flareshow::ResourceToClassMap[resource_key]
-        klass = Kernel.const_get(klass_name)
         if klass_name
+          klass = Kernel.const_get(klass_name)
           if klass
             resources.each do |resource_data|
               item = cache.get_resource(resource_key, resource_data["id"])
