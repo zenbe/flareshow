@@ -30,8 +30,7 @@ class Comment < Flareshow::Resource
   # persisted files for this post
   def files
     cached = FileAttachment.list_cache
-    files = cached.select{|k,v|v.post_id == id}
-    files.size > 0 ? files : (FileAttachment.find({:post_id => id}) || [])
+    files = cached.select{|f|f.post_id == id}
   end
   
   def content

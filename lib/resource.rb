@@ -21,7 +21,7 @@ class Flareshow::Resource
     
     # list out the instances in memory
     def list_cache
-      store.list_resource(resource_key)
+      store.list_resource(resource_key).map{|k,v|v}
     end
     
     # store the response resources in the cache
