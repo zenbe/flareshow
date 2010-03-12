@@ -40,6 +40,10 @@ class Post < Flareshow::Resource
     self.files = []
   end
   
+  def content
+    Nokogiri::HTML::Document.new.fragment(get("content")).to_s
+  end
+  
   # persisted files for this post
   def files
     FileAttachment.find({:post_id => id}) || []

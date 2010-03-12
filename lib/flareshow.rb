@@ -8,6 +8,7 @@ require 'facets/dictionary'
 require 'uuid'
 require 'mime/types'
 require 'cgi'
+require 'nokogiri'
 
 # std lib
 require 'net/http'
