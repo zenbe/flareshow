@@ -44,7 +44,7 @@ Gem::Specification.new do |s|
      "test/flareshow_test.rb",
      "test/test_helper.rb"
   ]
-  s.homepage = %q{http://github.com/zenbe/flareshow}
+  s.homepage = %q{http://github.com/willbailey/flareshow}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{flareshow}

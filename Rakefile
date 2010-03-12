@@ -8,13 +8,14 @@ begin
     gem.summary = %Q{a ruby gem for interacting with the shareflow collaboration service}
     gem.description = %Q{a ruby gem for interacting with the shareflow collaboration service by Zenbe}
     gem.email = "will.bailey@gmail.com"
-    gem.homepage = "http://github.com/willbailey/flareshow"
+    gem.homepage = "http://github.com/zenbe/flareshow"
     gem.authors = ["Will Bailey"]
     gem.add_development_dependency "thoughtbot-shoulda", "> 0"
     gem.add_dependency "json", "> 0"
     gem.add_dependency "curb", "> 0"
     gem.add_dependency "facets", "> 0"
     gem.add_dependency "uuid", "> 0"
+    gem.add_dependency "nokogiri", "> 0"
     gem.rubyforge_project = "flareshow"
   end
 rescue LoadError
