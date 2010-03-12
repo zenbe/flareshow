@@ -28,13 +28,17 @@ class FileAttachment < Flareshow::Resource
   # post for this file
   def post
     return false unless post_id
-    Post.find({:id => post_id})
+    post = Post.get_from_cache(post_id)
+    post ||= Comment.get_from_cache(post_id)
+    post ||= Post.find({:id => post_id})
+    post ||= Comment.find({:id => post_id})
   end
   
-  # get the user for this file
+  # user for this post
   def user
-    p = post && post.first
-    p.user && p.user.first
+    return User.current unless user_id
+    user = User.get_from_cache(user_id)
+    user || User.first({:id => user_id})
   end
   
 end

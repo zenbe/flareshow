@@ -16,13 +16,26 @@ class Comment < Flareshow::Resource
   
   # get the post for this comment
   def post
-    Post.first(:id => post_id)
+    post = Post.get_from_cache(reply_to)
+    post || Post.first(:id => reply_to)
   end
   
   # user for this post
   def user
     return User.current unless user_id
-    User.first({:id => user_id})
+    user = User.get_from_cache(user_id)
+    user || User.first({:id => user_id})
+  end
+  
+  # persisted files for this post
+  def files
+    cached = FileAttachment.list_cache
+    files = cached.select{|k,v|v.post_id == id}
+    files.size > 0 ? files : (FileAttachment.find({:post_id => id}) || [])
+  end
+  
+  def content
+    Nokogiri::HTML::Document.new.fragment(get("content")).to_s
   end
   
 end

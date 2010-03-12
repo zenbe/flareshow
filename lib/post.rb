@@ -46,12 +46,16 @@ class Post < Flareshow::Resource
   
   # persisted files for this post
   def files
-    FileAttachment.find({:post_id => id}) || []
+    cached = FileAttachment.list_cache
+    files = cached.select{|k,v|v.post_id == id}
+    files.size > 0 ? files : (FileAttachment.find({:post_id => id}) || [])
   end
   
   # comments for this post
   def comments
-    Comment.find({:post_id => id})
+    cached = Comment.list_cache
+    comments = cached.select{|k,v|v.reply_to == id}
+    comments.size > 0 ? comments : (Comment.find({:reply_to => id}) || [])
   end
   
   # user for this post
