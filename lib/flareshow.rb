@@ -16,7 +16,6 @@ require 'net/https'
 require 'ostruct'
 require 'yaml'
 require 'logger'
-require 'ruby-debug'
 
 # Application Constants and configuration
 module Flareshow
