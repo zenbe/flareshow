@@ -13,8 +13,7 @@
 
 Flareshow provides a ruby wrapper around the shareflow json rpc wire protocol.  
 
-For more information about the Shareflow API see:
-<http://docs.google.com/View?id=dchr4h9d_5gz6nw3cb>
+For more information about the Shareflow API see: http://api.zenbe.com
 
 ### Getting Started
 You'll need a shareflow account setup before you can begin interacting with the api.  Go to <http://getshareflow.com> and sign up for a free account.
