@@ -30,7 +30,7 @@ password  : password
 To authenticate manually do the following:
 
     Flareshow::Service.configure(<subdomain>)
-    Flareshow.authenticate(<login>, <password>)
+    Flareshow::Service.authenticate(<login>, <password>)
 
 ### Usage
 
